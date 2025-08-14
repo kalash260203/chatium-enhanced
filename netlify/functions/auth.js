@@ -81,10 +81,13 @@ exports.handler = async (event, context) => {
     // GET /auth/me - Get current user
     if (path.includes('/api/auth/me') && method === 'GET') {
         try {
-            console.log('Auth check - headers:', JSON.stringify(headers, null, 2));
-            console.log('Auth check - cookies:', headers.cookie);
+            // Use request headers from the current event
+            const reqHeaders = event.headers || {};
+            const cookieHeader = reqHeaders.cookie || reqHeaders.Cookie || '';
+            console.log('Auth check - headers:', JSON.stringify(reqHeaders, null, 2));
+            console.log('Auth check - cookie header:', cookieHeader);
             
-            const cookies = parseCookies(headers.cookie);
+            const cookies = parseCookies(cookieHeader);
             const token = cookies.jwt;
             console.log('Auth check - token found:', !!token);
             
@@ -305,7 +308,7 @@ async function handleLogout() {
   return {
     statusCode: 200,
     headers: {
-      ...headers,
+      ...corsHeaders,
       'Set-Cookie': 'jwt=; HttpOnly; Path=/; Max-Age=0',
     },
     body: JSON.stringify({ success: true, message: "Logout successful" }),
@@ -319,7 +322,7 @@ async function handleOnboard(body, user) {
     if (!fullName || !bio || !nativeLanguage || !learningLanguage || !location) {
       return {
         statusCode: 400,
-        headers,
+        headers: corsHeaders,
         body: JSON.stringify({
           message: "All fields are required",
           missingFields: [
@@ -345,7 +348,7 @@ async function handleOnboard(body, user) {
     if (!updatedUser) {
       return {
         statusCode: 404,
-        headers,
+        headers: corsHeaders,
         body: JSON.stringify({ message: "User not found" }),
       };
     }
@@ -363,14 +366,14 @@ async function handleOnboard(body, user) {
 
     return {
       statusCode: 200,
-      headers,
+      headers: corsHeaders,
       body: JSON.stringify({ success: true, user: updatedUser }),
     };
   } catch (error) {
     console.error("Onboarding error:", error);
     return {
       statusCode: 500,
-      headers,
+      headers: corsHeaders,
       body: JSON.stringify({ message: "Internal Server Error" }),
     };
   }
