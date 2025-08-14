@@ -9,19 +9,25 @@ const useSignUp = () => {
 
   const { mutate, isPending, error } = useMutation({
     mutationFn: signup,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("🎉 Signup successful! Response:", data);
+      
       // Show success message
       toast.success("Account created successfully! Complete your profile to get started.");
       
-      // Navigate immediately to onboarding page
-      navigate("/onboarding");
+      // Update the query cache immediately with the user data
+      if (data.user) {
+        queryClient.setQueryData(["authUser"], { user: data.user });
+        console.log("✅ Updated auth user in cache:", data.user);
+      }
       
-      // Invalidate the auth user query to refetch the user data after navigation
-      setTimeout(() => {
-        queryClient.invalidateQueries({ queryKey: ["authUser"] });
-      }, 200);
+      // Navigate immediately to onboarding page
+      console.log("� Calling navigate('/onboarding')");
+      navigate("/onboarding");
+      console.log("✅ Navigate called");
     },
     onError: (error) => {
+      console.log("❌ Signup failed:", error);
       toast.error(error.response?.data?.message || "Failed to create account");
     },
   });

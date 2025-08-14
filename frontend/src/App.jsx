@@ -22,6 +22,14 @@ const App = () => {
   const isAuthenticated = Boolean(authUser);
   const isOnboarded = authUser?.isOnboarded;
 
+  // Debug logging
+  console.log("🔍 App state:", {
+    isLoading,
+    authUser: authUser ? { id: authUser._id, isOnboarded: authUser.isOnboarded } : null,
+    isAuthenticated,
+    isOnboarded
+  });
+
   if (isLoading) return <PageLoader />;
 
   return (
