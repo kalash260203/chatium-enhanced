@@ -99,7 +99,7 @@ exports.handler = async (event, context) => {
                 };
             }
 
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
             console.log('Token decoded successfully for user:', decoded.userId);
             
             const user = await User.findById(decoded.userId).select('-password');
@@ -140,7 +140,7 @@ exports.handler = async (event, context) => {
       if (!user) {
         return {
           statusCode: 401,
-          headers,
+          headers: corsHeaders,
           body: JSON.stringify({ message: "Unauthorized" }),
         };
       }
@@ -149,7 +149,7 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 404,
-      headers,
+      headers: corsHeaders,
       body: JSON.stringify({ message: 'Route not found' }),
     };
 
@@ -157,7 +157,7 @@ exports.handler = async (event, context) => {
     console.error('Auth function error:', error);
     return {
       statusCode: 500,
-      headers,
+      headers: corsHeaders,
       body: JSON.stringify({ message: error.message }),
     };
   }
@@ -170,7 +170,7 @@ async function handleSignup(body) {
     if (!email || !password || !fullName) {
       return {
         statusCode: 400,
-        headers,
+        headers: corsHeaders,
         body: JSON.stringify({ message: "All fields are required" }),
       };
     }
@@ -178,7 +178,7 @@ async function handleSignup(body) {
     if (password.length < 6) {
       return {
         statusCode: 400,
-        headers,
+        headers: corsHeaders,
         body: JSON.stringify({ message: "Password must be at least 6 characters" }),
       };
     }
@@ -187,7 +187,7 @@ async function handleSignup(body) {
     if (!emailRegex.test(email)) {
       return {
         statusCode: 400,
-        headers,
+        headers: corsHeaders,
         body: JSON.stringify({ message: "Invalid email format" }),
       };
     }
@@ -196,7 +196,7 @@ async function handleSignup(body) {
     if (existingUser) {
       return {
         statusCode: 400,
-        headers,
+        headers: corsHeaders,
         body: JSON.stringify({ message: "Email already exists, please use a different one" }),
       };
     }
@@ -229,7 +229,7 @@ async function handleSignup(body) {
     return {
       statusCode: 201,
       headers: {
-        ...headers,
+        ...corsHeaders,
         'Set-Cookie': `jwt=${token}; HttpOnly; Path=/; Max-Age=604800; SameSite=${process.env.NODE_ENV === 'production' ? 'None' : 'Lax'}; ${process.env.NODE_ENV === 'production' ? 'Secure;' : ''}`,
       },
       body: JSON.stringify({ success: true, user: newUser }),
@@ -238,7 +238,7 @@ async function handleSignup(body) {
     console.log("Error in signup:", error);
     return {
       statusCode: 500,
-      headers,
+      headers: corsHeaders,
       body: JSON.stringify({ message: "Internal Server Error" }),
     };
   }
@@ -251,7 +251,7 @@ async function handleLogin(body) {
     if (!email || !password) {
       return {
         statusCode: 400,
-        headers,
+        headers: corsHeaders,
         body: JSON.stringify({ message: "All fields are required" }),
       };
     }
@@ -260,7 +260,7 @@ async function handleLogin(body) {
     if (!user) {
       return {
         statusCode: 401,
-        headers,
+        headers: corsHeaders,
         body: JSON.stringify({ message: "Invalid email or password" }),
       };
     }
