@@ -1,0 +1,13 @@
+{
+  "name": "chatium-enhanced-serverless",
+  "version": "1.0.0",
+  "description": "Serverless version of Chatium - A modern chat application",
+  "scripts": {
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm install && npm run build",
+    "preview": "cd frontend && npm run preview"
+  },
+  "keywords": ["chat", "react", "nodejs", "serverless", "netlify"],
+  "author": "kalash260203",
+  "license": "MIT"
+}
