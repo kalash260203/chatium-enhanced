@@ -16,12 +16,14 @@ export const logout = async () => {
 
 export const getAuthUser = async () => {
   try {
-    // Note: Need to implement /auth/me endpoint in serverless functions
-    // For now, this will need to be handled differently
+    console.log("Attempting to get auth user...");
     const res = await axiosInstance.get("/auth/me");
+    console.log("Auth user response:", res.data);
     return res.data;
   } catch (error) {
     console.log("Error in getAuthUser:", error);
+    console.log("Error response:", error.response?.data);
+    console.log("Error status:", error.response?.status);
     return null;
   }
 };

@@ -84,7 +84,8 @@ exports.handler = async (event, context) => {
             console.log('Auth check - headers:', JSON.stringify(headers, null, 2));
             console.log('Auth check - cookies:', headers.cookie);
             
-            const token = getTokenFromCookies(headers.cookie);
+            const cookies = parseCookies(headers.cookie);
+            const token = cookies.jwt;
             console.log('Auth check - token found:', !!token);
             
             if (!token) {

@@ -10,16 +10,16 @@ const useSignUp = () => {
   const { mutate, isPending, error } = useMutation({
     mutationFn: signup,
     onSuccess: () => {
-      // Invalidate the auth user query to refetch the user data
-      queryClient.invalidateQueries({ queryKey: ["authUser"] });
-      
       // Show success message
       toast.success("Account created successfully! Complete your profile to get started.");
       
-      // Navigate to onboarding page
+      // Navigate immediately to onboarding page
+      navigate("/onboarding");
+      
+      // Invalidate the auth user query to refetch the user data after navigation
       setTimeout(() => {
-        navigate("/onboarding");
-      }, 100); // Small delay to ensure query invalidation is processed
+        queryClient.invalidateQueries({ queryKey: ["authUser"] });
+      }, 200);
     },
     onError: (error) => {
       toast.error(error.response?.data?.message || "Failed to create account");
