@@ -16,6 +16,8 @@ export const logout = async () => {
 
 export const getAuthUser = async () => {
   try {
+    // Note: Need to implement /auth/me endpoint in serverless functions
+    // For now, this will need to be handled differently
     const res = await axiosInstance.get("/auth/me");
     return res.data;
   } catch (error) {
@@ -25,7 +27,7 @@ export const getAuthUser = async () => {
 };
 
 export const completeOnboarding = async (userData) => {
-  const response = await axiosInstance.post("/auth/onboarding", userData);
+  const response = await axiosInstance.post("/auth/onboard", userData);
   return response.data;
 };
 
@@ -35,17 +37,17 @@ export async function getUserFriends() {
 }
 
 export async function getRecommendedUsers() {
-  const response = await axiosInstance.get("/users");
+  const response = await axiosInstance.get("/users/recommended");
   return response.data;
 }
 
 export async function getOutgoingFriendReqs() {
-  const response = await axiosInstance.get("/users/outgoing-friend-requests");
+  const response = await axiosInstance.get("/users/outgoing-requests");
   return response.data;
 }
 
 export async function sendFriendRequest(userId) {
-  const response = await axiosInstance.post(`/users/friend-request/${userId}`);
+  const response = await axiosInstance.post(`/users/send-friend-request/${userId}`);
   return response.data;
 }
 
@@ -55,7 +57,7 @@ export async function getFriendRequests() {
 }
 
 export async function acceptFriendRequest(requestId) {
-  const response = await axiosInstance.put(`/users/friend-request/${requestId}/accept`);
+  const response = await axiosInstance.post(`/users/accept-friend-request/${requestId}`);
   return response.data;
 }
 

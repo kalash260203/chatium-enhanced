@@ -78,6 +78,22 @@ exports.handler = async (event, context) => {
       return await handleLogout();
     }
 
+    if (path.includes('/api/auth/me') && method === 'GET') {
+      const user = await authenticateUser(event);
+      if (!user) {
+        return {
+          statusCode: 401,
+          headers,
+          body: JSON.stringify({ message: "Unauthorized" }),
+        };
+      }
+      return {
+        statusCode: 200,
+        headers,
+        body: JSON.stringify({ user }),
+      };
+    }
+
     if (path.includes('/api/auth/onboard') && method === 'POST') {
       const user = await authenticateUser(event);
       if (!user) {
@@ -173,7 +189,7 @@ async function handleSignup(body) {
       statusCode: 201,
       headers: {
         ...headers,
-        'Set-Cookie': `jwt=${token}; HttpOnly; Path=/; Max-Age=604800; SameSite=${process.env.NODE_ENV === 'production' ? 'None' : 'Strict'}; ${process.env.NODE_ENV === 'production' ? 'Secure' : ''}`,
+        'Set-Cookie': `jwt=${token}; HttpOnly; Path=/; Max-Age=604800; SameSite=${process.env.NODE_ENV === 'production' ? 'None' : 'Lax'}; ${process.env.NODE_ENV === 'production' ? 'Secure;' : ''}`,
       },
       body: JSON.stringify({ success: true, user: newUser }),
     };
@@ -225,7 +241,7 @@ async function handleLogin(body) {
       statusCode: 200,
       headers: {
         ...headers,
-        'Set-Cookie': `jwt=${token}; HttpOnly; Path=/; Max-Age=604800; SameSite=${process.env.NODE_ENV === 'production' ? 'None' : 'Strict'}; ${process.env.NODE_ENV === 'production' ? 'Secure' : ''}`,
+        'Set-Cookie': `jwt=${token}; HttpOnly; Path=/; Max-Age=604800; SameSite=${process.env.NODE_ENV === 'production' ? 'None' : 'Lax'}; ${process.env.NODE_ENV === 'production' ? 'Secure;' : ''}`,
       },
       body: JSON.stringify({ success: true, user }),
     };
