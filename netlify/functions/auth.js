@@ -8,7 +8,7 @@ const { connectDB } = require("../../lib/db.js");
 const { upsertStreamUser } = require("../../lib/stream.js");
 
 // Helper function to handle CORS
-const headers = {
+const corsHeaders = {
   'Access-Control-Allow-Origin': process.env.NODE_ENV === 'production' 
     ? process.env.FRONTEND_URL || '*'
     : 'http://localhost:5173',
@@ -52,7 +52,7 @@ exports.handler = async (event, context) => {
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
-      headers,
+      headers: corsHeaders,
       body: '',
     };
   }
@@ -78,23 +78,64 @@ exports.handler = async (event, context) => {
       return await handleLogout();
     }
 
+    // GET /auth/me - Get current user
     if (path.includes('/api/auth/me') && method === 'GET') {
-      const user = await authenticateUser(event);
-      if (!user) {
-        return {
-          statusCode: 401,
-          headers,
-          body: JSON.stringify({ message: "Unauthorized" }),
-        };
-      }
-      return {
-        statusCode: 200,
-        headers,
-        body: JSON.stringify({ user }),
-      };
-    }
+        try {
+            console.log('Auth check - headers:', JSON.stringify(headers, null, 2));
+            console.log('Auth check - cookies:', headers.cookie);
+            
+            const token = getTokenFromCookies(headers.cookie);
+            console.log('Auth check - token found:', !!token);
+            
+            if (!token) {
+                console.log('No token found in cookies');
+                return {
+                    statusCode: 401,
+                    headers: {
+                        ...corsHeaders,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: 'No token provided' })
+                };
+            }
 
-    if (path.includes('/api/auth/onboard') && method === 'POST') {
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+            console.log('Token decoded successfully for user:', decoded.userId);
+            
+            const user = await User.findById(decoded.userId).select('-password');
+            if (!user) {
+                console.log('User not found for ID:', decoded.userId);
+                return {
+                    statusCode: 401,
+                    headers: {
+                        ...corsHeaders,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ message: 'User not found' })
+                };
+            }
+
+            console.log('Auth check successful for user:', user.email);
+            return {
+                statusCode: 200,
+                headers: {
+                    ...corsHeaders,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user })
+            };
+        } catch (error) {
+            console.error('Auth check error:', error.message);
+            return {
+                statusCode: 401,
+                headers: {
+                    ...corsHeaders,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: 'Invalid token' })
+            };
+        }
+    }    if (path.includes('/api/auth/onboard') && method === 'POST') {
       const user = await authenticateUser(event);
       if (!user) {
         return {
