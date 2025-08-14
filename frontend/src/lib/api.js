@@ -1,7 +1,11 @@
 import { axiosInstance } from "./axios";
 
 export const signup = async (signupData) => {
+  console.log("Making signup request...");
   const response = await axiosInstance.post("/auth/signup", signupData);
+  console.log("Signup response:", response);
+  console.log("Signup response headers:", response.headers);
+  console.log("Cookies after signup:", document.cookie);
   return response.data;
 };
 
@@ -17,6 +21,7 @@ export const logout = async () => {
 export const getAuthUser = async () => {
   try {
     console.log("Attempting to get auth user...");
+    console.log("Cookies before request:", document.cookie);
     const res = await axiosInstance.get("/auth/me");
     console.log("Auth user response:", res.data);
     return res.data;
@@ -24,6 +29,7 @@ export const getAuthUser = async () => {
     console.log("Error in getAuthUser:", error);
     console.log("Error response:", error.response?.data);
     console.log("Error status:", error.response?.status);
+    console.log("Current cookies:", document.cookie);
     return null;
   }
 };

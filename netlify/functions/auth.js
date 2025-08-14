@@ -10,7 +10,7 @@ const { upsertStreamUser } = require("../../lib/stream.js");
 // Helper function to handle CORS
 const corsHeaders = {
   'Access-Control-Allow-Origin': process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL || '*'
+    ? 'https://chatium-enhanced.netlify.app'
     : 'http://localhost:5173',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
@@ -231,7 +231,9 @@ async function handleSignup(body) {
       statusCode: 201,
       headers: {
         ...corsHeaders,
-        'Set-Cookie': `jwt=${token}; HttpOnly; Path=/; Max-Age=604800; SameSite=${process.env.NODE_ENV === 'production' ? 'None' : 'Lax'}; ${process.env.NODE_ENV === 'production' ? 'Secure;' : ''}`,
+        'Set-Cookie': process.env.NODE_ENV === 'production' 
+          ? `jwt=${token}; HttpOnly; Path=/; Max-Age=604800; SameSite=None; Secure`
+          : `jwt=${token}; HttpOnly; Path=/; Max-Age=604800; SameSite=Lax`,
       },
       body: JSON.stringify({ success: true, user: newUser }),
     };
@@ -270,7 +272,7 @@ async function handleLogin(body) {
     if (!isPasswordCorrect) {
       return {
         statusCode: 401,
-        headers,
+        headers: corsHeaders,
         body: JSON.stringify({ message: "Invalid email or password" }),
       };
     }
@@ -282,8 +284,10 @@ async function handleLogin(body) {
     return {
       statusCode: 200,
       headers: {
-        ...headers,
-        'Set-Cookie': `jwt=${token}; HttpOnly; Path=/; Max-Age=604800; SameSite=${process.env.NODE_ENV === 'production' ? 'None' : 'Lax'}; ${process.env.NODE_ENV === 'production' ? 'Secure;' : ''}`,
+        ...corsHeaders,
+        'Set-Cookie': process.env.NODE_ENV === 'production' 
+          ? `jwt=${token}; HttpOnly; Path=/; Max-Age=604800; SameSite=None; Secure`
+          : `jwt=${token}; HttpOnly; Path=/; Max-Age=604800; SameSite=Lax`,
       },
       body: JSON.stringify({ success: true, user }),
     };
@@ -291,7 +295,7 @@ async function handleLogin(body) {
     console.log("Error in login:", error);
     return {
       statusCode: 500,
-      headers,
+      headers: corsHeaders,
       body: JSON.stringify({ message: "Internal Server Error" }),
     };
   }
