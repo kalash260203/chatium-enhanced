@@ -7,6 +7,12 @@
     "build": "cd frontend && npm install && npm run build",
     "preview": "cd frontend && npm run preview"
   },
+  "dependencies": {
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "mongoose": "^7.5.0",
+    "stream-chat": "^8.0.0"
+  },
   "keywords": ["chat", "react", "nodejs", "serverless", "netlify"],
   "author": "kalash260203",
   "license": "MIT"

@@ -9,7 +9,7 @@ const { connectDB } = require("../../lib/db.js");
 // Helper function to handle CORS
 const headers = {
   'Access-Control-Allow-Origin': process.env.NODE_ENV === 'production' 
-    ? process.env.FRONTEND_URL 
+    ? process.env.FRONTEND_URL || '*'
     : 'http://localhost:5173',
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
   'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
