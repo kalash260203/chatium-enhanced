@@ -10,7 +10,11 @@ export const signup = async (signupData) => {
 };
 
 export const login = async (loginData) => {
+  console.log("Making login request...");
   const response = await axiosInstance.post("/auth/login", loginData);
+  console.log("Login response:", response);
+  console.log("Login response headers:", response.headers);
+  console.log("Cookies after login:", document.cookie);
   return response.data;
 };
 export const logout = async () => {

@@ -10,22 +10,24 @@ const useLogin = () => {
   const { mutate, isPending, error } = useMutation({
     mutationFn: login,
     onSuccess: (data) => {
-      // Invalidate the auth user query to refetch the user data
-      queryClient.invalidateQueries({ queryKey: ["authUser"] });
+      console.log("🎉 Login successful! Response:", data);
       
       // Show success message
       toast.success("Welcome back!");
       
+      // Update the query cache immediately with the user data
+      if (data.user) {
+        queryClient.setQueryData(["authUser"], { user: data.user });
+        console.log("✅ Updated auth user in cache:", data.user);
+      }
+      
       // Navigate based on onboarding status
-      setTimeout(() => {
-        if (data.user && data.user.isOnboarded) {
-          navigate("/");
-        } else {
-          navigate("/onboarding");
-        }
-      }, 100); // Small delay to ensure query invalidation is processed
+      const targetRoute = data.user?.isOnboarded ? "/" : "/onboarding";
+      console.log("🚀 Navigating to:", targetRoute);
+      navigate(targetRoute);
     },
     onError: (error) => {
+      console.log("❌ Login failed:", error);
       toast.error(error.response?.data?.message || "Failed to login");
     },
   });
