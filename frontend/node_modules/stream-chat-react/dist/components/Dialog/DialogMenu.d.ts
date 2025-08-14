@@ -1,3 +1,0 @@
-import React, { ComponentProps } from 'react';
-export type DialogMenuButtonProps = ComponentProps<'button'>;
-export declare const DialogMenuButton: ({ children, className, ...props }: DialogMenuButtonProps) => React.JSX.Element;

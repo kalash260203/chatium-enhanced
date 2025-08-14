@@ -1,5 +1,0 @@
-import React from 'react';
-import type { IconProps } from '../../types/types';
-export declare const DownloadIcon: ({ className }: IconProps) => React.JSX.Element;
-export declare const PlayTriangleIcon: () => React.JSX.Element;
-export declare const PauseIcon: () => React.JSX.Element;

@@ -1,6 +1,0 @@
-import { PropsWithChildren, ReactPortal } from 'react';
-export type PortalProps = {
-    getPortalDestination: () => Element | null;
-    isOpen?: boolean;
-};
-export declare const Portal: ({ children, getPortalDestination, isOpen, }: PropsWithChildren<PortalProps>) => ReactPortal | null;
